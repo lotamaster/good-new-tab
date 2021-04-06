@@ -6,6 +6,7 @@
 }
 .content {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   width: 100%;
@@ -21,6 +22,10 @@
   /* Make sure text is infront of background images */
   position: relative;
   z-index: 3;
+}
+
+.date {
+  font: 25px monospace;
 }
 
 .clock {

@@ -2,45 +2,46 @@ import React, { useState, useEffect } from "react";
 import moment from "moment";
 import "./App.scss";
 
-export const getDayFromDt = dt => {
+export const getDayFromDt = (dt) => {
   let date = moment.utc(dt * 1000).local();
   return date.format("dddd");
 };
 
 export const App = () => {
-  const [time, setTime] = useState(moment().format("HH:mm:ss"));
+  const [time, setTime] = useState(moment());
   const [weatherInfo, setWeatherInfo] = useState({});
   const [error, setError] = useState(null);
 
   useEffect(() => {
     let secTimer = setInterval(() => {
-      setTime(moment().format("HH:mm:ss"));
+      setTime(moment());
     }, 1000);
 
     return () => clearInterval(secTimer);
   }, []);
 
-  const params = {
-    lat: 39.07760037562836,
-    lon: -77.22042258515692,
-    apiKey: "be8000bae527da67016cb17469340704",
-    units: "imperial",
-    exclude: "minutely,hourly,alerts"
-  };
-
   useEffect(() => {
+    const params = {
+      lat: 39.09582149714131,
+      lon: -77.20730189702883,
+      apiKey: "be8000bae527da67016cb17469340704",
+      units: "imperial",
+      exclude: "minutely,hourly,alerts",
+    };
+
     fetch(
       `https://api.openweathermap.org/data/2.5/onecall?lat=${params.lat}&lon=${params.lon}&appid=${params.apiKey}&units=${params.units}&exclude=${params.exclude}`
     )
-      .then(res => res.json())
+      .then((res) => res.json())
       .then(
-        result => {
-          setWeatherInfo(result);
+        (result) => {
+          if (result.cod === 429) {
+            // TODO: api key has been temporarily blocked, handle this better
+          } else {
+            setWeatherInfo(result);
+          }
         },
-        // Note: it's important to handle errors here
-        // instead of a catch() block so that we don't swallow
-        // exceptions from actual bugs in components.
-        error => {
+        (error) => {
           setError(error);
         }
       );
@@ -50,15 +51,18 @@ export const App = () => {
 
   return (
     <>
-      <div className="stars"></div>
-      <div className="twinkling"></div>
-      <div className="clouds"></div>
+      <div className="stars" />
+      <div className="twinkling" />
+      <div className="clouds" />
 
       <div className="content">
-        <div className="clock">{time}</div>
+        <div className="date">{time.format("dddd | MMMM Do | YYYY")}</div>
+
+        <div className="clock">{time.format("HH:mm:ss")}</div>
 
         <div className="weather-container">
           {error && "there was an error getting weather info"}
+          {!error && !weatherInfoIsLoaded && "loading..."}
           {!error && weatherInfoIsLoaded && (
             <>
               <div className="todays-weather">
@@ -92,7 +96,7 @@ export const App = () => {
                 </div>
               </div>
 
-              {[1, 2, 3, 4, 5].map(value => {
+              {[1, 2, 3, 4, 5].map((value) => {
                 return (
                   <div className="weather-item" key={value}>
                     <div className="other-day-weather">
