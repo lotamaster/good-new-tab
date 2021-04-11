@@ -37,6 +37,7 @@ export const App = () => {
         (result) => {
           if (result.cod === 429) {
             // TODO: api key has been temporarily blocked, handle this better
+            setError("API limit has been reached");
           } else {
             setWeatherInfo(result);
           }
